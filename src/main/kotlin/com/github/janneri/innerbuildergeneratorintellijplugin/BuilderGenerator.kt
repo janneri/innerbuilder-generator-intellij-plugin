@@ -36,6 +36,8 @@ object BuilderGenerator {
         // create fields and setter methods to the builder if they don't exist
         addBuilderFieldsAndMethods(builderMethodPrefix, builderClass!!, dtoFields, elementFactory)
 
+        removeExtraFieldsFromBuilder(builderClass, dtoFields, builderMethodPrefix)
+
         // recreate the copy constructor
         if (createCopyConstructor) {
             addOrReplaceMethod(dtoClass, createCopyMethod(dtoClass, dtoFields, elementFactory))
@@ -76,6 +78,20 @@ object BuilderGenerator {
         return builderClass
     }
 
+    private fun removeExtraFieldsFromBuilder(builderClass: PsiClass,
+                                             dtoFields: List<PsiField>,
+                                             builderMethodPrefix: String?) {
+        builderClass.fields.forEach { field ->
+            val dtoField = dtoFields.find { it.name == field.name && it.type == field.type }
+            if (dtoField == null) {
+                field.delete()
+                val methodName = methodName(builderMethodPrefix, field)
+                builderClass.findMethodsByName(methodName, false).firstOrNull()?.delete()
+            }
+        }
+    }
+
+
     private fun addBuilderFieldsAndMethods(builderMethodPrefix: String?,
                                            builderClass: PsiClass,
                                            psiFields: List<PsiField>,
@@ -86,21 +102,22 @@ object BuilderGenerator {
             val field = elementFactory.createField(psiField.name, psiField.type)
 
             if (!hasField(builderClass, field)) {
-                if (isOptional(field.type)) {
-                    builderClass.add(elementFactory.createFieldFromText(
+                when {
+                    isOptional(field.type) -> {
+                        builderClass.add(elementFactory.createFieldFromText(
                             field.text.replace(";", " = Optional.empty();"), builderClass))
-                }
-                else if (isList(field.type)) {
-                    builderClass.add(elementFactory.createFieldFromText(
-                        field.text.replace(";", " = Collections.emptyList();"), builderClass))
-                }
-                else {
-                    builderClass.add(field)
+                    }
+                    isList(field.type) -> {
+                        builderClass.add(elementFactory.createFieldFromText(
+                            field.text.replace(";", " = Collections.emptyList();"), builderClass))
+                    }
+                    else -> {
+                        builderClass.add(field)
+                    }
                 }
             }
 
-            val methodName = if (builderMethodPrefix.isNullOrEmpty()) psiField.name else builderMethodPrefix + makeFirstLetterUpperCase(psiField.name)
-            val method = elementFactory.createMethod(methodName, builderMethodReturnType)
+            val method = elementFactory.createMethod(methodName(builderMethodPrefix, field), builderMethodReturnType)
             val parameter = elementFactory.createParameter(psiField.name, psiField.type)
             method.parameterList.add(parameter)
 
@@ -154,6 +171,11 @@ object BuilderGenerator {
         method += "return builder;\n"
         method += "}\n"
         return elementFactory.createMethodFromText(method, targetClass)
+    }
+
+    private fun methodName(builderMethodPrefix: String?, field: PsiField): String {
+        return if (builderMethodPrefix.isNullOrEmpty()) field.name
+                else builderMethodPrefix + makeFirstLetterUpperCase(field.name)
     }
 
 }
