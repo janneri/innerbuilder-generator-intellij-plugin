@@ -19,7 +19,7 @@ object GeneratorUtil {
         if (psiFile == null || editor == null) {
             return null
         }
-        val offset: Int = editor.getCaretModel().getOffset()
+        val offset: Int = editor.caretModel.offset
         val element = psiFile.findElementAt(offset)
         return PsiTreeUtil.getParentOfType(element, PsiClass::class.java)
     }
@@ -45,7 +45,7 @@ object GeneratorUtil {
     }
 
     fun hasField(clazz: PsiClass?, field: PsiField): Boolean {
-        return clazz!!.findFieldByName(field.getName(), false) != null
+        return clazz!!.findFieldByName(field.name, false) != null
     }
 
     fun makeFirstLetterUpperCase(str: String): String {
