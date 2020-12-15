@@ -20,7 +20,7 @@
         <action
                 class="com.github.janneri.innerbuildergeneratorintellijplugin.GenerateAction"
                 id="innerbuilder"
-                text="Generate Inner Builder..."
+                text="Generate Inner Builder"
                 description="Generate a builder">
             <add-to-group group-id="GenerateGroup" anchor="after" relative-to-action="JavaGenerateGroup1" />
             <keyboard-shortcut keymap="$default" first-keystroke="shift alt B"/>
