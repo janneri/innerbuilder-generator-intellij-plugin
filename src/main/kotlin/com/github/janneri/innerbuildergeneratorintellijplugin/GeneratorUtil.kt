@@ -50,4 +50,12 @@ object GeneratorUtil {
         return str.substring(0, 1).toUpperCase() + str.substring(1)
     }
 
+    fun isOptional(type: PsiType): Boolean {
+        return type.toString().startsWith("PsiType:Optional<")
+    }
+
+    fun isList(type: PsiType): Boolean {
+        return type.toString().startsWith("PsiType:List<")
+    }
+
 }

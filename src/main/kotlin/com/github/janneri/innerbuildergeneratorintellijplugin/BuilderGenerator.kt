@@ -3,6 +3,8 @@ package com.github.janneri.innerbuildergeneratorintellijplugin
 import com.github.janneri.innerbuildergeneratorintellijplugin.GeneratorUtil.addOrReplaceMethod
 import com.github.janneri.innerbuildergeneratorintellijplugin.GeneratorUtil.deleteConstructor
 import com.github.janneri.innerbuildergeneratorintellijplugin.GeneratorUtil.hasField
+import com.github.janneri.innerbuildergeneratorintellijplugin.GeneratorUtil.isList
+import com.github.janneri.innerbuildergeneratorintellijplugin.GeneratorUtil.isOptional
 import com.github.janneri.innerbuildergeneratorintellijplugin.GeneratorUtil.makeFirstLetterUpperCase
 import com.intellij.psi.*
 import org.jetbrains.annotations.NotNull
@@ -84,11 +86,17 @@ object BuilderGenerator {
             val field = elementFactory.createField(psiField.name, psiField.type)
 
             if (!hasField(builderClass, field)) {
-                builderClass.add(field)
-                println("adding field ${field.name}")
-            }
-            else {
-                println("builder already has field ${field.name}")
+                if (isOptional(field.type)) {
+                    builderClass.add(elementFactory.createFieldFromText(
+                            field.text.replace(";", " = Optional.empty();"), builderClass))
+                }
+                else if (isList(field.type)) {
+                    builderClass.add(elementFactory.createFieldFromText(
+                        field.text.replace(";", " = Collections.emptyList();"), builderClass))
+                }
+                else {
+                    builderClass.add(field)
+                }
             }
 
             val methodName = if (builderMethodPrefix.isNullOrEmpty()) psiField.name else builderMethodPrefix + makeFirstLetterUpperCase(psiField.name)
