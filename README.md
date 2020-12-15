@@ -14,11 +14,18 @@
 - [ ] Click the <kbd>Watch</kbd> button on the top of the [IntelliJ Platform Plugin Template][template] to be notified about releases containing new features and fixes.
 
 <!-- Plugin description -->
-This Fancy IntelliJ Platform Plugin is going to be your implementation of the brilliant ideas that you have.
+Generates an inner builder class to a DTO. Also generates a copy constructor.
+Supports recreation: just add a field to the DTO and run generate again.
 
-This specific section is a source for the [plugin.xml](/src/main/resources/META-INF/plugin.xml) file which will be extracted by the [Gradle](/build.gradle.kts) during the build process.
+The basic idea of a DTO here is 
+  - A final class with public final fields
+  - No setters and no getters 
+  - Typed as Optional if the field is nullable
+  - Contains a Builder as a static inner class, which embraces immutability
 
-To keep everything working, do not remove `<!-- ... -->` sections. 
+Configuration through environment variables:
+  - BUILDER_PLUGIN_DO_NOT_CREATE_COPY_CONSTRUCTOR (when "true" the builder will not generate a copy constructor)
+  - BUILDER_PLUGIN_METHOD_PREFIX (default "", allows some people use "with" as a prefix for the builder methods) 
 <!-- Plugin description end -->
 
 ## Installation
