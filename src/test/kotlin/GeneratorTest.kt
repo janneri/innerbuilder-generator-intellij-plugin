@@ -4,8 +4,7 @@ import com.intellij.psi.PsiClass
 import com.intellij.psi.PsiJavaFile
 import com.intellij.testFramework.fixtures.LightJavaCodeInsightFixtureTestCase
 
-
-class SimpleCodeInsightTest : LightJavaCodeInsightFixtureTestCase() {
+class GeneratorTest : LightJavaCodeInsightFixtureTestCase() {
     override fun getTestDataPath(): String {
         return "src/test/testData"
     }
