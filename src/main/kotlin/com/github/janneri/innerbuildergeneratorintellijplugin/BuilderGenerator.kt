@@ -151,7 +151,7 @@ object BuilderGenerator {
         var method = "private $BUILDER_CLASS_NAME(Builder builder) {\n"
 
         for (field in fields) {
-            method += "this.${field.name} = builder.${field.name};\n"
+            method += "${field.name} = builder.${field.name};\n"
         }
 
         method += "}\n"
