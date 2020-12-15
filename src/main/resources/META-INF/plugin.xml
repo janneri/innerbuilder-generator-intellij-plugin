@@ -1,19 +1,22 @@
 <idea-plugin>
     <id>com.github.janneri.innerbuildergeneratorintellijplugin</id>
-    <name>innerbuilder-generator-intellij-plugin</name>
+    <name>Innerbuilder Generator</name>
     <vendor>janneri</vendor>
 
     <!-- Product and plugin compatibility requirements -->
     <!-- https://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/plugin_compatibility.html -->
     <depends>com.intellij.modules.platform</depends>
+    <depends>com.intellij.modules.java</depends>
 
-    <extensions defaultExtensionNs="com.intellij">
-        <applicationService serviceImplementation="com.github.janneri.innerbuildergeneratorintellijplugin.services.MyApplicationService"/>
-        <projectService serviceImplementation="com.github.janneri.innerbuildergeneratorintellijplugin.services.MyProjectService"/>
-    </extensions>
+    <actions>
+        <action
+                class="com.github.janneri.innerbuildergeneratorintellijplugin.GenerateAction"
+                id="innerbuilder"
+                text="Generate Inner Builder..."
+                description="Generate a builder">
+            <add-to-group group-id="GenerateGroup" anchor="after" relative-to-action="JavaGenerateGroup1" />
+            <keyboard-shortcut keymap="$default" first-keystroke="shift alt B"/>
+        </action>
+    </actions>
 
-    <applicationListeners>
-        <listener class="com.github.janneri.innerbuildergeneratorintellijplugin.listeners.MyProjectManagerListener"
-                  topic="com.intellij.openapi.project.ProjectManagerListener"/>
-    </applicationListeners>
 </idea-plugin>
