@@ -1,7 +1,15 @@
 <idea-plugin>
     <id>com.github.janneri.innerbuildergeneratorintellijplugin</id>
     <name>Innerbuilder Generator</name>
-    <vendor>janneri</vendor>
+    <vendor email="janne.rintanen@solita.fi" url="https://github.com/janneri">Janne Rintanen</vendor>
+
+    <description><![CDATA[
+    Generates an inner builder class to a DTO.<br>
+    Supports recreation: just add a field to the DTO and run generate again.<br>
+    Configuration through environment variables:
+    - BUILDER_CREATE_COPY_CONSTRUCTOR (default false, when "true" the builder will generate a copy constructor)
+    - BUILDER_METHOD_PREFIX (default "")
+    ]]></description>
 
     <!-- Product and plugin compatibility requirements -->
     <!-- https://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/plugin_compatibility.html -->
