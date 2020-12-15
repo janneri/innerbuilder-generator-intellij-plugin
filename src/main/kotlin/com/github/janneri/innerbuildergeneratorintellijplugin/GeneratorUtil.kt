@@ -1,12 +1,15 @@
+
 package com.github.janneri.innerbuildergeneratorintellijplugin
 
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.actionSystem.LangDataKeys
 import com.intellij.openapi.actionSystem.PlatformDataKeys
 import com.intellij.openapi.editor.Editor
-import com.intellij.psi.*
+import com.intellij.psi.PsiClass
+import com.intellij.psi.PsiField
+import com.intellij.psi.PsiMethod
+import com.intellij.psi.PsiType
 import com.intellij.psi.util.PsiTreeUtil
-
 
 object GeneratorUtil {
 
@@ -28,8 +31,7 @@ object GeneratorUtil {
         } else {
             if (beforeMethod != null) {
                 target.addBefore(newMethod, beforeMethod)
-            }
-            else {
+            } else {
                 target.add(newMethod)
             }
         }
@@ -57,5 +59,4 @@ object GeneratorUtil {
     fun isList(type: PsiType): Boolean {
         return type.toString().startsWith("PsiType:List<")
     }
-
 }

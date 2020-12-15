@@ -1,3 +1,4 @@
+
 package com.github.janneri.innerbuildergeneratorintellijplugin
 
 import com.github.janneri.innerbuildergeneratorintellijplugin.GeneratorUtil.addOrReplaceMethod
@@ -6,7 +7,12 @@ import com.github.janneri.innerbuildergeneratorintellijplugin.GeneratorUtil.hasF
 import com.github.janneri.innerbuildergeneratorintellijplugin.GeneratorUtil.isList
 import com.github.janneri.innerbuildergeneratorintellijplugin.GeneratorUtil.isOptional
 import com.github.janneri.innerbuildergeneratorintellijplugin.GeneratorUtil.makeFirstLetterUpperCase
-import com.intellij.psi.*
+import com.intellij.psi.JavaPsiFacade
+import com.intellij.psi.PsiClass
+import com.intellij.psi.PsiElementFactory
+import com.intellij.psi.PsiField
+import com.intellij.psi.PsiMethod
+import com.intellij.psi.PsiModifier
 import org.jetbrains.annotations.NotNull
 
 object BuilderGenerator {
@@ -52,15 +58,22 @@ object BuilderGenerator {
         }
     }
 
-    private fun createNewBuilderMethod(elementFactory: PsiElementFactory, dtoClass: PsiClass, newBuilderClass: PsiClass): @NotNull PsiMethod {
-        val newBuilderStaticMethod = elementFactory.createMethod(NEW_BUILDER_FACTORY_METHOD_NAME, elementFactory.createType(newBuilderClass))
+    private fun createNewBuilderMethod(
+        elementFactory: PsiElementFactory,
+        dtoClass: PsiClass,
+        newBuilderClass: PsiClass
+    ): @NotNull PsiMethod {
+        val newBuilderStaticMethod =
+            elementFactory.createMethod(NEW_BUILDER_FACTORY_METHOD_NAME, elementFactory.createType(newBuilderClass))
+
         newBuilderStaticMethod.modifierList.setModifierProperty(PsiModifier.STATIC, true)
         newBuilderStaticMethod.body!!.add(
             elementFactory.createStatementFromText(
                 """
                 return new $BUILDER_CLASS_NAME();
                 
-                """.trimIndent(), dtoClass
+                """.trimIndent(),
+                dtoClass
             )
         )
         return newBuilderStaticMethod
@@ -78,9 +91,11 @@ object BuilderGenerator {
         return builderClass
     }
 
-    private fun removeExtraFieldsFromBuilder(builderClass: PsiClass,
-                                             dtoFields: List<PsiField>,
-                                             builderMethodPrefix: String?) {
+    private fun removeExtraFieldsFromBuilder(
+        builderClass: PsiClass,
+        dtoFields: List<PsiField>,
+        builderMethodPrefix: String?
+    ) {
         builderClass.fields.forEach { field ->
             val dtoField = dtoFields.find { it.name == field.name && it.type == field.type }
             if (dtoField == null) {
@@ -91,11 +106,12 @@ object BuilderGenerator {
         }
     }
 
-
-    private fun addBuilderFieldsAndMethods(builderMethodPrefix: String?,
-                                           builderClass: PsiClass,
-                                           psiFields: List<PsiField>,
-                                           elementFactory: PsiElementFactory) {
+    private fun addBuilderFieldsAndMethods(
+        builderMethodPrefix: String?,
+        builderClass: PsiClass,
+        psiFields: List<PsiField>,
+        elementFactory: PsiElementFactory
+    ) {
         val builderMethodReturnType = elementFactory.createType(builderClass)
 
         for (psiField in psiFields) {
@@ -133,7 +149,11 @@ object BuilderGenerator {
         }
     }
 
-    private fun createBuildMethod(psiClass: PsiClass, builderClass: PsiClass, elementFactory: PsiElementFactory): @NotNull PsiMethod {
+    private fun createBuildMethod(
+        psiClass: PsiClass,
+        builderClass: PsiClass,
+        elementFactory: PsiElementFactory
+    ): @NotNull PsiMethod {
         val buildMethod = elementFactory.createMethod("build", elementFactory.createType(psiClass))
         buildMethod.body!!.add(
             elementFactory.createStatementFromText(
@@ -144,10 +164,11 @@ object BuilderGenerator {
         return buildMethod
     }
 
-
-    private fun createPrivateConstructorFromBuilder(targetClass: PsiClass,
-                                                    fields: List<PsiField>,
-                                                    elementFactory: PsiElementFactory): PsiMethod {
+    private fun createPrivateConstructorFromBuilder(
+        targetClass: PsiClass,
+        fields: List<PsiField>,
+        elementFactory: PsiElementFactory
+    ): PsiMethod {
         var method = "private $BUILDER_CLASS_NAME(Builder builder) {\n"
 
         for (field in fields) {
@@ -158,9 +179,11 @@ object BuilderGenerator {
         return elementFactory.createMethodFromText(method, targetClass)
     }
 
-    private fun createCopyMethod(targetClass: PsiClass,
-                                 fields: List<PsiField>,
-                                 elementFactory: PsiElementFactory): PsiMethod {
+    private fun createCopyMethod(
+        targetClass: PsiClass,
+        fields: List<PsiField>,
+        elementFactory: PsiElementFactory
+    ): PsiMethod {
         var method = "public static $BUILDER_CLASS_NAME copy(${elementFactory.createType(targetClass).name} src) {\n"
         method += "Builder builder = new Builder();"
 
@@ -177,5 +200,4 @@ object BuilderGenerator {
         return if (builderMethodPrefix.isNullOrEmpty()) field.name
                 else builderMethodPrefix + makeFirstLetterUpperCase(field.name)
     }
-
 }
