@@ -25,6 +25,14 @@
             <add-to-group group-id="GenerateGroup" anchor="after" relative-to-action="JavaGenerateGroup1" />
             <keyboard-shortcut keymap="$default" first-keystroke="shift alt B"/>
         </action>
+
+        <action
+                class="com.github.janneri.innerbuildergeneratorintellijplugin.GenerateWithOptionsAction"
+                id="innerbuilderwithoptions"
+                text="Generate Inner Builder..."
+                description="Generate a builder and set options">
+            <add-to-group group-id="GenerateGroup" anchor="after" relative-to-action="JavaGenerateGroup1" />
+        </action>
     </actions>
 
 </idea-plugin>
