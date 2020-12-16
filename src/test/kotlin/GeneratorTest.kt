@@ -1,4 +1,5 @@
 import com.github.janneri.innerbuildergeneratorintellijplugin.BuilderGenerator
+import com.github.janneri.innerbuildergeneratorintellijplugin.GeneratorOptions
 import com.intellij.openapi.command.WriteCommandAction
 import com.intellij.psi.PsiClass
 import com.intellij.psi.PsiJavaFile
@@ -12,9 +13,7 @@ class GeneratorTest : LightJavaCodeInsightFixtureTestCase() {
     fun test_can_generate_a_builder_from_a_simple_dto() {
         myFixture.configureByFiles("SimpleTestDto.java")
 
-        WriteCommandAction.writeCommandAction(project).run<RuntimeException> {
-            BuilderGenerator.generateBuilder(getSourceClass(), null, true)
-        }
+        runGenerator()
 
         myFixture.checkResultByFile("SimpleTestDtoResult.java")
     }
@@ -22,9 +21,7 @@ class GeneratorTest : LightJavaCodeInsightFixtureTestCase() {
     fun test_can_regenerate_a_builder() {
         myFixture.configureByFiles("RegenerateDto.java")
 
-        WriteCommandAction.writeCommandAction(project).run<RuntimeException> {
-            BuilderGenerator.generateBuilder(getSourceClass(), null, true)
-        }
+        runGenerator()
 
         myFixture.checkResultByFile("RegenerateDtoResult.java")
     }
@@ -32,11 +29,16 @@ class GeneratorTest : LightJavaCodeInsightFixtureTestCase() {
     fun test_regenerate_removes_extra_fields_from_the_builder() {
         myFixture.configureByFiles("RegenerateRemoveField.java")
 
-        WriteCommandAction.writeCommandAction(project).run<RuntimeException> {
-            BuilderGenerator.generateBuilder(getSourceClass(), null, true)
-        }
+        runGenerator()
 
         myFixture.checkResultByFile("RegenerateRemoveFieldResult.java")
+    }
+
+    private fun runGenerator() {
+        WriteCommandAction.writeCommandAction(project).run<RuntimeException> {
+            val generator = BuilderGenerator(getSourceClass(), GeneratorOptions(true, ""))
+            generator.generateBuilder()
+        }
     }
 
     private fun getSourceClass(): PsiClass {

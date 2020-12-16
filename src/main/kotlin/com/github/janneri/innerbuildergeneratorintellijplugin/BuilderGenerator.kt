@@ -8,18 +8,18 @@ import com.github.janneri.innerbuildergeneratorintellijplugin.GeneratorUtil.isOp
 import com.github.janneri.innerbuildergeneratorintellijplugin.GeneratorUtil.makeFirstLetterUpperCase
 import com.intellij.psi.JavaPsiFacade
 import com.intellij.psi.PsiClass
-import com.intellij.psi.PsiElementFactory
 import com.intellij.psi.PsiField
 import com.intellij.psi.PsiMethod
 import com.intellij.psi.PsiModifier
 import org.jetbrains.annotations.NotNull
 
-object BuilderGenerator {
-    private const val BUILDER_CLASS_NAME = "Builder"
-    private const val NEW_BUILDER_FACTORY_METHOD_NAME = "builder"
+const val BUILDER_CLASS_NAME = "Builder"
+const val NEW_BUILDER_FACTORY_METHOD_NAME = "builder"
 
-    fun generateBuilder(dtoClass: PsiClass, builderMethodPrefix: String?, createCopyConstructor: Boolean = false) {
-        val elementFactory = JavaPsiFacade.getElementFactory(dtoClass.project)
+class BuilderGenerator(private val dtoClass: PsiClass, private val options: GeneratorOptions) {
+    private val elementFactory = JavaPsiFacade.getElementFactory(dtoClass.project)
+
+    fun generateBuilder() {
         val dtoFields = dtoClass.fields.filterNot { it.hasModifierProperty(PsiModifier.STATIC) }
 
         var builderClass: PsiClass? = dtoClass.findInnerClassByName(BUILDER_CLASS_NAME, false)
@@ -27,41 +27,37 @@ object BuilderGenerator {
 
         if (builderClassNotFound) {
             // Create a static class named Builder
-            val newBuilderClass = createBuilderClassWithPrivateConstructor(elementFactory)
+            val newBuilderClass = createBuilderClassWithPrivateConstructor()
 
             // Add the build-method to the Builder class
-            newBuilderClass.add(createBuildMethod(dtoClass, newBuilderClass, elementFactory))
+            newBuilderClass.add(createBuildMethod(newBuilderClass))
 
             // Add a static (factory) method for creating a new instance of the builder
-            dtoClass.add(createNewBuilderMethod(elementFactory, dtoClass, newBuilderClass))
+            dtoClass.add(createNewBuilderMethod(newBuilderClass))
 
             builderClass = newBuilderClass
         }
 
         // create fields and setter methods to the builder if they don't exist
-        addBuilderFieldsAndMethods(builderMethodPrefix, builderClass!!, dtoFields, elementFactory)
+        addBuilderFieldsAndMethods(builderClass!!, dtoFields)
 
-        removeExtraFieldsFromBuilder(builderClass, dtoFields, builderMethodPrefix)
+        removeExtraFieldsFromBuilder(builderClass, dtoFields)
 
         // recreate the copy constructor
-        if (createCopyConstructor) {
-            addOrReplaceMethod(dtoClass, createCopyMethod(dtoClass, dtoFields, elementFactory))
+        if (options.generateCopyMethod) {
+            addOrReplaceMethod(dtoClass, createCopyMethod(dtoFields))
         }
 
         // recreate the constructor from builder instance to dto class instance
         deleteConstructor(dtoClass, "private", 1)
-        dtoClass.add(createPrivateConstructorFromBuilder(dtoClass, dtoFields, elementFactory))
+        dtoClass.add(createPrivateConstructorFromBuilder(dtoFields))
 
         if (builderClassNotFound) {
             dtoClass.add(builderClass)
         }
     }
 
-    private fun createNewBuilderMethod(
-        elementFactory: PsiElementFactory,
-        dtoClass: PsiClass,
-        newBuilderClass: PsiClass
-    ): @NotNull PsiMethod {
+    private fun createNewBuilderMethod(newBuilderClass: PsiClass): @NotNull PsiMethod {
         val newBuilderStaticMethod =
             elementFactory.createMethod(NEW_BUILDER_FACTORY_METHOD_NAME, elementFactory.createType(newBuilderClass))
 
@@ -78,7 +74,7 @@ object BuilderGenerator {
         return newBuilderStaticMethod
     }
 
-    private fun createBuilderClassWithPrivateConstructor(elementFactory: PsiElementFactory): PsiClass {
+    private fun createBuilderClassWithPrivateConstructor(): PsiClass {
         val builderClass = elementFactory.createClass(BUILDER_CLASS_NAME)
         builderClass.modifierList!!.add(elementFactory.createKeyword("static"))
 
@@ -90,27 +86,18 @@ object BuilderGenerator {
         return builderClass
     }
 
-    private fun removeExtraFieldsFromBuilder(
-        builderClass: PsiClass,
-        dtoFields: List<PsiField>,
-        builderMethodPrefix: String?
-    ) {
+    private fun removeExtraFieldsFromBuilder(builderClass: PsiClass, dtoFields: List<PsiField>) {
         builderClass.fields.forEach { field ->
             val dtoField = dtoFields.find { it.name == field.name && it.type == field.type }
             if (dtoField == null) {
                 field.delete()
-                val methodName = methodName(builderMethodPrefix, field)
+                val methodName = methodName(options.withPrefix, field)
                 builderClass.findMethodsByName(methodName, false).firstOrNull()?.delete()
             }
         }
     }
 
-    private fun addBuilderFieldsAndMethods(
-        builderMethodPrefix: String?,
-        builderClass: PsiClass,
-        psiFields: List<PsiField>,
-        elementFactory: PsiElementFactory
-    ) {
+    private fun addBuilderFieldsAndMethods(builderClass: PsiClass, psiFields: List<PsiField>) {
         val builderMethodReturnType = elementFactory.createType(builderClass)
 
         for (psiField in psiFields) {
@@ -140,7 +127,7 @@ object BuilderGenerator {
                 }
             }
 
-            val method = elementFactory.createMethod(methodName(builderMethodPrefix, field), builderMethodReturnType)
+            val method = elementFactory.createMethod(methodName(options.withPrefix, field), builderMethodReturnType)
             val parameter = elementFactory.createParameter(psiField.name, psiField.type)
             method.parameterList.add(parameter)
 
@@ -162,26 +149,18 @@ object BuilderGenerator {
         }
     }
 
-    private fun createBuildMethod(
-        psiClass: PsiClass,
-        builderClass: PsiClass,
-        elementFactory: PsiElementFactory
-    ): @NotNull PsiMethod {
-        val buildMethod = elementFactory.createMethod("build", elementFactory.createType(psiClass))
+    private fun createBuildMethod(builderClass: PsiClass): @NotNull PsiMethod {
+        val buildMethod = elementFactory.createMethod("build", elementFactory.createType(dtoClass))
         buildMethod.body!!.add(
             elementFactory.createStatementFromText(
-                "return new " + elementFactory.createType(psiClass).name + "(this);",
+                "return new " + elementFactory.createType(dtoClass).name + "(this);",
                 builderClass
             )
         )
         return buildMethod
     }
 
-    private fun createPrivateConstructorFromBuilder(
-        targetClass: PsiClass,
-        fields: List<PsiField>,
-        elementFactory: PsiElementFactory
-    ): PsiMethod {
+    private fun createPrivateConstructorFromBuilder(fields: List<PsiField>): PsiMethod {
         var method = "private $BUILDER_CLASS_NAME(Builder builder) {\n"
 
         for (field in fields) {
@@ -189,15 +168,11 @@ object BuilderGenerator {
         }
 
         method += "}\n"
-        return elementFactory.createMethodFromText(method, targetClass)
+        return elementFactory.createMethodFromText(method, dtoClass)
     }
 
-    private fun createCopyMethod(
-        targetClass: PsiClass,
-        fields: List<PsiField>,
-        elementFactory: PsiElementFactory
-    ): PsiMethod {
-        var method = "public static $BUILDER_CLASS_NAME copy(${elementFactory.createType(targetClass).name} src) {\n"
+    private fun createCopyMethod(fields: List<PsiField>): PsiMethod {
+        var method = "public static $BUILDER_CLASS_NAME copy(${elementFactory.createType(dtoClass).name} src) {\n"
         method += "Builder builder = new Builder();"
 
         for (field in fields) {
@@ -206,7 +181,7 @@ object BuilderGenerator {
 
         method += "return builder;\n"
         method += "}\n"
-        return elementFactory.createMethodFromText(method, targetClass)
+        return elementFactory.createMethodFromText(method, dtoClass)
     }
 
     private fun methodName(builderMethodPrefix: String?, field: PsiField): String {
