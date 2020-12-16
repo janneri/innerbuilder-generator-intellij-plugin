@@ -1,4 +1,3 @@
-
 package com.github.janneri.innerbuildergeneratorintellijplugin
 
 import com.github.janneri.innerbuildergeneratorintellijplugin.GeneratorUtil.addOrReplaceMethod
@@ -120,12 +119,20 @@ object BuilderGenerator {
             if (!hasField(builderClass, field)) {
                 when {
                     isOptional(field.type) -> {
-                        builderClass.add(elementFactory.createFieldFromText(
-                            field.text.replace(";", " = Optional.empty();"), builderClass))
+                        builderClass.add(
+                            elementFactory.createFieldFromText(
+                                field.text.replace(";", " = Optional.empty();"),
+                                builderClass
+                            )
+                        )
                     }
                     isList(field.type) -> {
-                        builderClass.add(elementFactory.createFieldFromText(
-                            field.text.replace(";", " = Collections.emptyList();"), builderClass))
+                        builderClass.add(
+                            elementFactory.createFieldFromText(
+                                field.text.replace(";", " = Collections.emptyList();"),
+                                builderClass
+                            )
+                        )
                     }
                     else -> {
                         builderClass.add(field)
@@ -137,15 +144,21 @@ object BuilderGenerator {
             val parameter = elementFactory.createParameter(psiField.name, psiField.type)
             method.parameterList.add(parameter)
 
-            method.body!!.add(elementFactory.createStatementFromText(
-                "this.${psiField.name} = ${psiField.name};\n", builderClass)
+            method.body!!.add(
+                elementFactory.createStatementFromText(
+                    "this.${psiField.name} = ${psiField.name};\n",
+                    builderClass
+                )
             )
             method.body!!.add(
                 elementFactory.createStatementFromText("return this;\n", builderClass)
             )
 
-            addOrReplaceMethod(builderClass, method,
-                builderClass.findMethodsByName("build", false).firstOrNull())
+            addOrReplaceMethod(
+                builderClass,
+                method,
+                builderClass.findMethodsByName("build", false).firstOrNull()
+            )
         }
     }
 
@@ -198,6 +211,6 @@ object BuilderGenerator {
 
     private fun methodName(builderMethodPrefix: String?, field: PsiField): String {
         return if (builderMethodPrefix.isNullOrEmpty()) field.name
-                else builderMethodPrefix + makeFirstLetterUpperCase(field.name)
+        else builderMethodPrefix + makeFirstLetterUpperCase(field.name)
     }
 }

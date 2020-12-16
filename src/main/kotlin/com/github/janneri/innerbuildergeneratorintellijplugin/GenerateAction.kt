@@ -11,7 +11,8 @@ class GenerateAction : AnAction() {
         val psiClass = getPsiClass(e) ?: return
 
         WriteCommandAction.runWriteCommandAction(psiClass.project) {
-            BuilderGenerator.generateBuilder(psiClass,
+            BuilderGenerator.generateBuilder(
+                psiClass,
                 System.getenv("BUILDER_PLUGIN_METHOD_PREFIX"),
                 System.getenv("BUILDER_PLUGIN_DO_NOT_CREATE_COPY_CONSTRUCTOR") != null
             )
