@@ -99,6 +99,7 @@ class BuilderGenerator(private val dtoClass: PsiClass, private val options: Gene
 
     private fun addBuilderFieldsAndMethods(builderClass: PsiClass, psiFields: List<PsiField>) {
         val builderMethodReturnType = elementFactory.createType(builderClass)
+        var prevMethod: PsiMethod? = null
 
         for (psiField in psiFields) {
             val field = elementFactory.createField(psiField.name, psiField.type)
@@ -141,11 +142,16 @@ class BuilderGenerator(private val dtoClass: PsiClass, private val options: Gene
                 elementFactory.createStatementFromText("return this;\n", builderClass)
             )
 
+            // try to preserve order of methods
             addOrReplaceMethod(
-                builderClass,
-                method,
-                builderClass.findMethodsByName("build", false).firstOrNull()
+                target = builderClass,
+                newMethod = method,
+                beforeMethod = builderClass.findMethodsByName("build", false).firstOrNull(),
+                afterMethod = prevMethod
             )
+
+            // prevMethod is either the new method or the existing method
+            prevMethod = builderClass.findMethodBySignature(method, false)
         }
     }
 

@@ -25,13 +25,20 @@ object GeneratorUtil {
         return PsiTreeUtil.getParentOfType(element, PsiClass::class.java)
     }
 
-    fun addOrReplaceMethod(target: PsiClass, newMethod: PsiMethod, beforeMethod: PsiMethod? = null): PsiMethod {
+    fun addOrReplaceMethod(
+        target: PsiClass,
+        newMethod: PsiMethod,
+        afterMethod: PsiMethod? = null,
+        beforeMethod: PsiMethod? = null
+    ): PsiMethod {
         val existingMethod: PsiMethod? = target.findMethodBySignature(newMethod, false)
         if (existingMethod != null) {
             existingMethod.replace(newMethod)
         } else {
-            if (beforeMethod != null) {
+            if (beforeMethod != null && afterMethod == null) {
                 target.addBefore(newMethod, beforeMethod)
+            } else if (afterMethod != null) {
+                target.addAfter(newMethod, afterMethod)
             } else {
                 target.add(newMethod)
             }
@@ -41,7 +48,7 @@ object GeneratorUtil {
 
     fun deleteConstructor(fromClass: PsiClass, withModifier: String, parameterCount: Int) {
         fromClass.constructors
-            .firstOrNull { it.hasModifierProperty(withModifier) && it.parameters.size == parameterCount }
+            .firstOrNull { it.hasModifierProperty(withModifier) && it.parameterList.parametersCount == parameterCount }
             ?.delete()
     }
 
