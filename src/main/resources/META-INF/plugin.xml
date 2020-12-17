@@ -6,9 +6,10 @@
     <description><![CDATA[
     Generates an inner builder class to a DTO.<br>
     Supports recreation: just add a field to the DTO and run generate again.<br>
-    Configuration through environment variables:
-    - BUILDER_CREATE_COPY_CONSTRUCTOR (default false, when "true" the builder will generate a copy constructor)
-    - BUILDER_METHOD_PREFIX (default "")
+
+    You can configure the generator using the action "Generate Inner Builder...". <br>
+    The settings are saved and survive IDE restarts. <br>
+    To quickly generate with the previously selected settings, just hit "shift alt B"
     ]]></description>
 
     <!-- Product and plugin compatibility requirements -->

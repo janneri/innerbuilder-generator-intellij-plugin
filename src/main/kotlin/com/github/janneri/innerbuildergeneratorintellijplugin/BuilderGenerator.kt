@@ -91,7 +91,7 @@ class BuilderGenerator(private val dtoClass: PsiClass, private val options: Gene
             val dtoField = dtoFields.find { it.name == field.name && it.type == field.type }
             if (dtoField == null) {
                 field.delete()
-                val methodName = methodName(options.withPrefix, field)
+                val methodName = methodName(options.methodPrefix, field)
                 builderClass.findMethodsByName(methodName, false).firstOrNull()?.delete()
             }
         }
@@ -127,7 +127,7 @@ class BuilderGenerator(private val dtoClass: PsiClass, private val options: Gene
                 }
             }
 
-            val method = elementFactory.createMethod(methodName(options.withPrefix, field), builderMethodReturnType)
+            val method = elementFactory.createMethod(methodName(options.methodPrefix, field), builderMethodReturnType)
             val parameter = elementFactory.createParameter(psiField.name, psiField.type)
             method.parameterList.add(parameter)
 

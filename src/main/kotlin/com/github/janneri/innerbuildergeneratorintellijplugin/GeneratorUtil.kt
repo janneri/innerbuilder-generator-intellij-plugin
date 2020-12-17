@@ -1,6 +1,7 @@
 
 package com.github.janneri.innerbuildergeneratorintellijplugin
 
+import com.intellij.ide.util.PropertiesComponent
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.actionSystem.LangDataKeys
 import com.intellij.openapi.actionSystem.PlatformDataKeys
@@ -58,5 +59,22 @@ object GeneratorUtil {
 
     fun isList(type: PsiType): Boolean {
         return type.toString().startsWith("PsiType:List<")
+    }
+
+    // All plugins share the same namespace, so let's use a distinct prefix.
+    private const val PROPERTY_PREFIX = "com.github.janneri.innerbuildergeneratorintellijplugin"
+
+    fun persistGeneratorOptions(options: GeneratorOptions) {
+        val propertiesComponent = PropertiesComponent.getInstance()
+        propertiesComponent.setValue(PROPERTY_PREFIX + ".generateCopyMethod", options.generateCopyMethod, false)
+        propertiesComponent.setValue(PROPERTY_PREFIX + ".methodPrefix", options.methodPrefix, "")
+    }
+
+    fun loadPersistedGeneratorOptions(): GeneratorOptions {
+        val propertiesComponent = PropertiesComponent.getInstance()
+        return GeneratorOptions(
+            propertiesComponent.getBoolean(PROPERTY_PREFIX + ".generateCopyMethod", false),
+            propertiesComponent.getValue(PROPERTY_PREFIX + ".methodPrefix", "")
+        )
     }
 }
