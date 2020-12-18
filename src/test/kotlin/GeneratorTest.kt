@@ -34,6 +34,15 @@ class GeneratorTest : LightJavaCodeInsightFixtureTestCase() {
         myFixture.checkResultByFile("RegenerateRemoveFieldResult.java")
     }
 
+    fun test_generate_twice_should_lead_to_same_result_as_generate_once() {
+        myFixture.configureByFiles("SimpleTestDto.java")
+
+        runGenerator()
+        runGenerator()
+
+        myFixture.checkResultByFile("SimpleTestDtoResult.java")
+    }
+
     private fun runGenerator() {
         WriteCommandAction.writeCommandAction(project).run<RuntimeException> {
             val generator = BuilderGenerator(getSourceClass(), GeneratorOptions(true, ""))
