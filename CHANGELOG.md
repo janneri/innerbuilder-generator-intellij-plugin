@@ -4,4 +4,5 @@
 
 ## [Unreleased]
 ### Added
-- Initial scaffold created from [IntelliJ Platform Plugin Template](https://github.com/JetBrains/intellij-platform-plugin-template)
+- User can select/change settings from a dialog prior to generation.   
+- Added builder code generation with a shift+alt+B  
