@@ -5,7 +5,7 @@ import com.github.janneri.innerbuildergeneratorintellijplugin.GeneratorUtil.dele
 import com.github.janneri.innerbuildergeneratorintellijplugin.GeneratorUtil.hasField
 import com.github.janneri.innerbuildergeneratorintellijplugin.GeneratorUtil.isList
 import com.github.janneri.innerbuildergeneratorintellijplugin.GeneratorUtil.isOptional
-import com.github.janneri.innerbuildergeneratorintellijplugin.GeneratorUtil.makeFirstLetterUpperCase
+import com.github.janneri.innerbuildergeneratorintellijplugin.GeneratorUtil.firstLetterUpperCase
 import com.intellij.psi.JavaPsiFacade
 import com.intellij.psi.PsiClass
 import com.intellij.psi.PsiField
@@ -192,6 +192,6 @@ class BuilderGenerator(private val dtoClass: PsiClass, private val options: Gene
 
     private fun methodName(builderMethodPrefix: String?, field: PsiField): String {
         return if (builderMethodPrefix.isNullOrEmpty()) field.name
-        else builderMethodPrefix + makeFirstLetterUpperCase(field.name)
+        else builderMethodPrefix + firstLetterUpperCase(field.name)
     }
 }

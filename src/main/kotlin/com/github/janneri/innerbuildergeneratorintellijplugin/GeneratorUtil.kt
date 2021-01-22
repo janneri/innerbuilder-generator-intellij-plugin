@@ -56,7 +56,7 @@ object GeneratorUtil {
         return clazz!!.findFieldByName(field.name, false) != null
     }
 
-    fun makeFirstLetterUpperCase(str: String): String {
+    fun firstLetterUpperCase(str: String): String {
         return str.substring(0, 1).toUpperCase() + str.substring(1)
     }
 
