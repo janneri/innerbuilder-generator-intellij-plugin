@@ -56,7 +56,8 @@ class GeneratorTest : LightJavaCodeInsightFixtureTestCase() {
         WriteCommandAction.writeCommandAction(project).run<RuntimeException> {
             val generator = BuilderGenerator(
                 getSourceClass(),
-                GeneratorOptions(true, "", jsonDeserializeWithBuilder))
+                GeneratorOptions(true, "", jsonDeserializeWithBuilder)
+            )
             generator.generateBuilder()
         }
     }

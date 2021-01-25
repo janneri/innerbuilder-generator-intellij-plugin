@@ -2,8 +2,8 @@ package com.github.janneri.innerbuildergeneratorintellijplugin
 
 import com.github.janneri.innerbuildergeneratorintellijplugin.GeneratorUtil.addAnnotation
 import com.github.janneri.innerbuildergeneratorintellijplugin.GeneratorUtil.addOrReplaceMethod
-import com.github.janneri.innerbuildergeneratorintellijplugin.GeneratorUtil.deleteConstructor
 import com.github.janneri.innerbuildergeneratorintellijplugin.GeneratorUtil.convertFirstLetterToUpperCase
+import com.github.janneri.innerbuildergeneratorintellijplugin.GeneratorUtil.deleteConstructor
 import com.github.janneri.innerbuildergeneratorintellijplugin.GeneratorUtil.hasAnnotation
 import com.github.janneri.innerbuildergeneratorintellijplugin.GeneratorUtil.hasField
 import com.github.janneri.innerbuildergeneratorintellijplugin.GeneratorUtil.isList
