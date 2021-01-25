@@ -3,6 +3,14 @@
 # innerbuilder-generator-intellij-plugin Changelog
 
 ## [Unreleased]
+
+## [1.1.0] - 2021-01-25
+
+### Added
+- User can generate Jackson annotations to make json deserialization use the generated builder.
+
+## [1.0.0] - 2020-12-18
+
 ### Added
 - User can select/change settings from a dialog prior to generation.   
 - Added builder code generation with a shift+alt+B  
