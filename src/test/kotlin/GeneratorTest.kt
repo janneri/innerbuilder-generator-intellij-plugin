@@ -43,9 +43,20 @@ class GeneratorTest : LightJavaCodeInsightFixtureTestCase() {
         myFixture.checkResultByFile("SimpleTestDtoResult.java")
     }
 
-    private fun runGenerator() {
+    fun test_generates_jsondeserialize_annotations() {
+        myFixture.configureByFiles("SimpleTestDto.java")
+
+        runGenerator(jsonDeserializeWithBuilder = true)
+        runGenerator(jsonDeserializeWithBuilder = true)
+
+        myFixture.checkResultByFile("SimpleTestDtoJsonDeserializeResult.java")
+    }
+
+    private fun runGenerator(jsonDeserializeWithBuilder: Boolean = false) {
         WriteCommandAction.writeCommandAction(project).run<RuntimeException> {
-            val generator = BuilderGenerator(getSourceClass(), GeneratorOptions(true, ""))
+            val generator = BuilderGenerator(
+                getSourceClass(),
+                GeneratorOptions(true, "", jsonDeserializeWithBuilder))
             generator.generateBuilder()
         }
     }

@@ -7,11 +7,13 @@ import com.intellij.openapi.actionSystem.LangDataKeys
 import com.intellij.openapi.actionSystem.PlatformDataKeys
 import com.intellij.openapi.editor.Editor
 import com.intellij.psi.PsiClass
+import com.intellij.psi.PsiElementFactory
 import com.intellij.psi.PsiField
 import com.intellij.psi.PsiMethod
 import com.intellij.psi.PsiType
 import com.intellij.psi.util.PsiTreeUtil
 
+@Suppress("TooManyFunctions")
 object GeneratorUtil {
 
     fun getPsiClass(e: AnActionEvent): PsiClass? {
@@ -56,7 +58,19 @@ object GeneratorUtil {
         return clazz!!.findFieldByName(field.name, false) != null
     }
 
-    fun firstLetterUpperCase(str: String): String {
+    fun hasAnnotation(clazz: PsiClass?, annotationClassName: String): Boolean {
+        return clazz?.modifierList?.annotations?.find {
+            it.qualifiedName != null && it.qualifiedName!!.contains(annotationClassName)
+        } != null
+    }
+
+    fun addAnnotation(clazz: PsiClass?, annotationAsText: String, elementFactory: PsiElementFactory) {
+        val annotation = elementFactory.createAnnotationFromText(annotationAsText, clazz)
+        val modifierList = clazz?.modifierList
+        modifierList?.addBefore(annotation, modifierList.firstChild)
+    }
+
+    fun convertFirstLetterToUpperCase(str: String): String {
         return str.substring(0, 1).toUpperCase() + str.substring(1)
     }
 
@@ -70,18 +84,23 @@ object GeneratorUtil {
 
     // All plugins share the same namespace, so let's use a distinct prefix.
     private const val PROPERTY_PREFIX = "com.github.janneri.innerbuildergeneratorintellijplugin"
+    private const val PROPERTY_GEN_COPY_METHOD = "$PROPERTY_PREFIX.generateCopyMethod"
+    private const val PROPERTY_METHOD_PREFIX = "$PROPERTY_PREFIX.methodPrefix"
+    private const val PROPERTY_SERIALIZE_W_BUILDER = "$PROPERTY_PREFIX.jsonDeserializeWithBuilder"
 
     fun persistGeneratorOptions(options: GeneratorOptions) {
-        val propertiesComponent = PropertiesComponent.getInstance()
-        propertiesComponent.setValue(PROPERTY_PREFIX + ".generateCopyMethod", options.generateCopyMethod, false)
-        propertiesComponent.setValue(PROPERTY_PREFIX + ".methodPrefix", options.methodPrefix, "")
+        val properties = PropertiesComponent.getInstance()
+        properties.setValue(PROPERTY_GEN_COPY_METHOD, options.generateCopyMethod, false)
+        properties.setValue(PROPERTY_METHOD_PREFIX, options.methodPrefix, "")
+        properties.setValue(PROPERTY_SERIALIZE_W_BUILDER, options.jsonDeserializeWithBuilder, false)
     }
 
     fun loadPersistedGeneratorOptions(): GeneratorOptions {
-        val propertiesComponent = PropertiesComponent.getInstance()
+        val properties = PropertiesComponent.getInstance()
         return GeneratorOptions(
-            propertiesComponent.getBoolean(PROPERTY_PREFIX + ".generateCopyMethod", false),
-            propertiesComponent.getValue(PROPERTY_PREFIX + ".methodPrefix", "")
+            properties.getBoolean(PROPERTY_GEN_COPY_METHOD, false),
+            properties.getValue(PROPERTY_METHOD_PREFIX, ""),
+            properties.getBoolean(PROPERTY_SERIALIZE_W_BUILDER, false)
         )
     }
 }

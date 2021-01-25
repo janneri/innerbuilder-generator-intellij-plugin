@@ -17,6 +17,7 @@ import javax.swing.JPanel
 @Suppress("MagicNumber")
 class GeneratorOptionsDialog(persistedOptions: GeneratorOptions) : DialogWrapper(true) {
     private var generateCopyMethod: JBCheckBox = JBCheckBox(null, persistedOptions.generateCopyMethod)
+    private var jsonDeserializeWithBuilder: JBCheckBox = JBCheckBox(null, persistedOptions.jsonDeserializeWithBuilder)
     private var methodPrefix: JBTextField = JBTextField(persistedOptions.methodPrefix)
 
     init {
@@ -59,11 +60,17 @@ class GeneratorOptionsDialog(persistedOptions: GeneratorOptions) : DialogWrapper
         gridbag.gridx += 1
         panel.add(generateCopyMethod, gridbag.weightx(0.8))
 
+        gridbag.gridx = 0
+        gridbag.gridy += 1
+        panel.add(getLabel("JsonDeserialize with builder?"), gridbag.weightx(0.2))
+        gridbag.gridx += 1
+        panel.add(jsonDeserializeWithBuilder, gridbag.weightx(0.8))
+
         return panel
     }
 
     fun getSelectedOptions(): GeneratorOptions {
-        return GeneratorOptions(generateCopyMethod.isSelected, methodPrefix.text)
+        return GeneratorOptions(generateCopyMethod.isSelected, methodPrefix.text, jsonDeserializeWithBuilder.isSelected)
     }
 
     private fun getLabel(text: String): JComponent {

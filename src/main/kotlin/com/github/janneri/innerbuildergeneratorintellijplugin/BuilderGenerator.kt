@@ -1,11 +1,13 @@
 package com.github.janneri.innerbuildergeneratorintellijplugin
 
+import com.github.janneri.innerbuildergeneratorintellijplugin.GeneratorUtil.addAnnotation
 import com.github.janneri.innerbuildergeneratorintellijplugin.GeneratorUtil.addOrReplaceMethod
 import com.github.janneri.innerbuildergeneratorintellijplugin.GeneratorUtil.deleteConstructor
+import com.github.janneri.innerbuildergeneratorintellijplugin.GeneratorUtil.convertFirstLetterToUpperCase
+import com.github.janneri.innerbuildergeneratorintellijplugin.GeneratorUtil.hasAnnotation
 import com.github.janneri.innerbuildergeneratorintellijplugin.GeneratorUtil.hasField
 import com.github.janneri.innerbuildergeneratorintellijplugin.GeneratorUtil.isList
 import com.github.janneri.innerbuildergeneratorintellijplugin.GeneratorUtil.isOptional
-import com.github.janneri.innerbuildergeneratorintellijplugin.GeneratorUtil.firstLetterUpperCase
 import com.intellij.psi.JavaPsiFacade
 import com.intellij.psi.PsiClass
 import com.intellij.psi.PsiField
@@ -15,6 +17,9 @@ import org.jetbrains.annotations.NotNull
 
 const val BUILDER_CLASS_NAME = "Builder"
 const val NEW_BUILDER_FACTORY_METHOD_NAME = "builder"
+
+const val DESERIALIZE_ANNOTATION_NAME = "JsonDeserialize"
+const val JSONPOJO_BUILDER_ANNOTATION_NAME = "JsonPOJOBuilder"
 
 class BuilderGenerator(private val dtoClass: PsiClass, private val options: GeneratorOptions) {
     private val elementFactory = JavaPsiFacade.getElementFactory(dtoClass.project)
@@ -51,6 +56,19 @@ class BuilderGenerator(private val dtoClass: PsiClass, private val options: Gene
         // recreate the constructor from builder instance to dto class instance
         deleteConstructor(dtoClass, "private", 1)
         dtoClass.add(createPrivateConstructorFromBuilder(dtoFields))
+
+        if (options.jsonDeserializeWithBuilder) {
+            // ehkä remove annotation olisi parempi
+            if (!hasAnnotation(dtoClass, DESERIALIZE_ANNOTATION_NAME)) {
+                val annotationAsText = "@$DESERIALIZE_ANNOTATION_NAME(builder = ${dtoClass.name}.Builder.class)"
+                addAnnotation(dtoClass, annotationAsText, elementFactory)
+            }
+
+            if (!hasAnnotation(builderClass, JSONPOJO_BUILDER_ANNOTATION_NAME)) {
+                val annotationAsText = "@$JSONPOJO_BUILDER_ANNOTATION_NAME(withPrefix = \"${options.methodPrefix}\")"
+                addAnnotation(builderClass, annotationAsText, elementFactory)
+            }
+        }
 
         if (builderClassNotFound) {
             dtoClass.add(builderClass)
@@ -192,6 +210,6 @@ class BuilderGenerator(private val dtoClass: PsiClass, private val options: Gene
 
     private fun methodName(builderMethodPrefix: String?, field: PsiField): String {
         return if (builderMethodPrefix.isNullOrEmpty()) field.name
-        else builderMethodPrefix + firstLetterUpperCase(field.name)
+        else builderMethodPrefix + convertFirstLetterToUpperCase(field.name)
     }
 }
