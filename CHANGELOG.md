@@ -3,6 +3,18 @@
 # innerbuilder-generator-intellij-plugin Changelog
 
 ## [Unreleased]
+### Added
+
+### Changed
+
+### Deprecated
+
+### Removed
+
+### Fixed
+
+### Security
+## [1.1.0]
 
 ## [1.1.0] - 2021-01-25
 
