@@ -6,6 +6,7 @@
 ### Added
 
 ### Changed
+- No changes in features. Just checked that the plugin works with the new Idea 2021.1 and updated the compatible versions list.
 
 ### Deprecated
 
@@ -14,12 +15,6 @@
 ### Fixed
 
 ### Security
-
-## [1.1.1] - 2021-04-08
-
-### Changed
-
-- No changes in features. Just checked that the plugin works with the new Idea 2021.1 and updated the compatible versions list.
 
 ## [1.1.0] - 2021-01-25
 
