@@ -6,6 +6,18 @@
 ### Added
 
 ### Changed
+
+### Deprecated
+
+### Removed
+
+### Fixed
+
+### Security
+## [1.1.1]
+### Added
+
+### Changed
 - No changes in features. Just checked that the plugin works with the new Idea 2021.1 and updated the compatible versions list.
 
 ### Deprecated
