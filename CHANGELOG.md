@@ -7,6 +7,8 @@
 
 ### Changed
 
+- Checked that the plugin works with the new Idea 2021.2 and updated the compatible versions list.
+
 ### Deprecated
 
 ### Removed
