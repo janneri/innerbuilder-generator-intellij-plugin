@@ -3,6 +3,11 @@
 # innerbuilder-generator-intellij-plugin Changelog
 
 ## [Unreleased]
+
+### Changed
+
+- Checked that the plugin works with the new Idea 2021.3 and updated the compatible versions list.
+
 ## [1.1.2]
 ### Added
 
