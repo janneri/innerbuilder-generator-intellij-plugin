@@ -55,7 +55,7 @@ class BuilderGenerator(private val dtoClass: PsiClass, private val options: Gene
 
         // recreate the constructor from builder instance to dto class instance
         deleteConstructor(dtoClass, "private", 1)
-        dtoClass.add(createPrivateConstructorFromBuilder(dtoFields))
+        dtoClass.add(createPrivateConstructorFromBuilder(dtoFields, dtoClass.isRecord))
 
         if (options.jsonDeserializeWithBuilder) {
             // ehkä remove annotation olisi parempi
@@ -184,11 +184,19 @@ class BuilderGenerator(private val dtoClass: PsiClass, private val options: Gene
         return buildMethod
     }
 
-    private fun createPrivateConstructorFromBuilder(fields: List<PsiField>): PsiMethod {
+    private fun createPrivateConstructorFromBuilder(fields: List<PsiField>, isRecord: Boolean): PsiMethod {
         var method = "private $BUILDER_CLASS_NAME(Builder builder) {\n"
 
-        for (field in fields) {
-            method += "${field.name} = builder.${field.name};\n"
+        if (isRecord) {
+            // With records we need to call the default constructor with this(...)
+            method += "this("
+            method += fields.map{"builder." + it.name}.joinToString(",")
+            method += ");"
+        }
+        else {
+            for (field in fields) {
+                method += "${field.name} = builder.${field.name};\n"
+            }
         }
 
         method += "}\n"

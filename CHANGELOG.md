@@ -3,6 +3,11 @@
 # innerbuilder-generator-intellij-plugin Changelog
 
 ## [Unreleased]
+
+### Changed
+
+- Add basic support for Java Records.
+
 ## [1.1.3]
 
 ### Changed
