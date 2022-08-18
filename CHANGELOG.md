@@ -6,7 +6,8 @@
 
 ### Changed
 
-- Add basic support for Java Records.
+- Add basic support for Java Records although using it with records is questionable.
+- Updated the compatible versions list to support version 2022.*.
 
 ## [1.1.3]
 
