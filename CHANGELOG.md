@@ -3,6 +3,10 @@
 # innerbuilder-generator-intellij-plugin Changelog
 
 ## [Unreleased]
+
+### Changed
+- Updated the compatible versions list to support version 2022.3.n Drop support for versions 2021.n.
+
 ## [1.1.5]
 
 ### Changed
