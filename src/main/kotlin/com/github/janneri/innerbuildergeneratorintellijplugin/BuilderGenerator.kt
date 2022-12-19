@@ -147,12 +147,12 @@ class BuilderGenerator(private val dtoClass: PsiClass, private val options: Gene
             }
 
             val method = elementFactory.createMethod(methodName(options.methodPrefix, field), builderMethodReturnType)
-            val parameter = elementFactory.createParameter(psiField.name, psiField.type)
+            val parameter = elementFactory.createParameter(paramName(options.paramName, psiField), psiField.type)
             method.parameterList.add(parameter)
 
             method.body!!.add(
                 elementFactory.createStatementFromText(
-                    "this.${psiField.name} = ${psiField.name};\n",
+                    "this.${psiField.name} = ${paramName(options.paramName, psiField)};\n",
                     builderClass
                 )
             )
@@ -219,5 +219,9 @@ class BuilderGenerator(private val dtoClass: PsiClass, private val options: Gene
     private fun methodName(builderMethodPrefix: String?, field: PsiField): String {
         return if (builderMethodPrefix.isNullOrEmpty()) field.name
         else builderMethodPrefix + convertFirstLetterToUpperCase(field.name)
+    }
+
+    private fun paramName(builderParamName: String?, field: PsiField): String {
+        return if (builderParamName.isNullOrEmpty()) field.name else builderParamName
     }
 }

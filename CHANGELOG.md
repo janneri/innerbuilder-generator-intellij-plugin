@@ -3,6 +3,11 @@
 # innerbuilder-generator-intellij-plugin Changelog
 
 ## [Unreleased]
+
+### Added
+- Configuration of builder method parameter name.
+- Show sample code with the selected settings.
+
 ## [1.1.6]
 
 ### Changed

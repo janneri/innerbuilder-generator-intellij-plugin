@@ -85,6 +85,7 @@ object GeneratorUtil {
     // All plugins share the same namespace, so let's use a distinct prefix.
     private const val PROPERTY_PREFIX = "com.github.janneri.innerbuildergeneratorintellijplugin"
     private const val PROPERTY_GEN_COPY_METHOD = "$PROPERTY_PREFIX.generateCopyMethod"
+    private const val PROPERTY_PARAM_PREFIX = "$PROPERTY_PREFIX.paramName"
     private const val PROPERTY_METHOD_PREFIX = "$PROPERTY_PREFIX.methodPrefix"
     private const val PROPERTY_SERIALIZE_W_BUILDER = "$PROPERTY_PREFIX.jsonDeserializeWithBuilder"
 
@@ -92,6 +93,7 @@ object GeneratorUtil {
         val properties = PropertiesComponent.getInstance()
         properties.setValue(PROPERTY_GEN_COPY_METHOD, options.generateCopyMethod, false)
         properties.setValue(PROPERTY_METHOD_PREFIX, options.methodPrefix, "")
+        properties.setValue(PROPERTY_PARAM_PREFIX, options.paramName, "")
         properties.setValue(PROPERTY_SERIALIZE_W_BUILDER, options.jsonDeserializeWithBuilder, false)
     }
 
@@ -100,6 +102,7 @@ object GeneratorUtil {
         return GeneratorOptions(
             properties.getBoolean(PROPERTY_GEN_COPY_METHOD, false),
             properties.getValue(PROPERTY_METHOD_PREFIX, ""),
+            properties.getValue(PROPERTY_PARAM_PREFIX, ""),
             properties.getBoolean(PROPERTY_SERIALIZE_W_BUILDER, false)
         )
     }

@@ -18,6 +18,14 @@ class GeneratorTest : LightJavaCodeInsightFixtureTestCase() {
         myFixture.checkResultByFile("SimpleTestDtoResult.java")
     }
 
+    fun test_can_generate_a_builder_from_a_simple_dto_with_custom_param_names() {
+        myFixture.configureByFiles("SimpleTestDto.java")
+
+        runGenerator(customParamName = "val")
+
+        myFixture.checkResultByFile("SimpleTestDtoCustomParamNameResult.java")
+    }
+
     fun test_can_regenerate_a_builder() {
         myFixture.configureByFiles("RegenerateDto.java")
 
@@ -52,11 +60,11 @@ class GeneratorTest : LightJavaCodeInsightFixtureTestCase() {
         myFixture.checkResultByFile("SimpleTestDtoJsonDeserializeResult.java")
     }
 
-    private fun runGenerator(jsonDeserializeWithBuilder: Boolean = false) {
+    private fun runGenerator(jsonDeserializeWithBuilder: Boolean = false, customParamName: String = "") {
         WriteCommandAction.writeCommandAction(project).run<RuntimeException> {
             val generator = BuilderGenerator(
                 getSourceClass(),
-                GeneratorOptions(true, "", jsonDeserializeWithBuilder)
+                GeneratorOptions(true, "", customParamName, jsonDeserializeWithBuilder)
             )
             generator.generateBuilder()
         }
