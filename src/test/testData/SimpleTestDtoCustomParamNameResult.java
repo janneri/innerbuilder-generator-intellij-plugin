@@ -26,12 +26,12 @@ public class SimpleTestDto {
         }
 
         public Builder foo(String val) {
-            this.foo = val;
+            foo = val;
             return this;
         }
 
         public Builder bar(Optional<String> val) {
-            this.bar = val;
+            bar = val;
             return this;
         }
 

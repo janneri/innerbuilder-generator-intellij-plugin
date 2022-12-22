@@ -5,6 +5,7 @@ import com.github.janneri.innerbuildergeneratorintellijplugin.GeneratorUtil.conv
 object SampleCodeGenerator {
     fun generateSample(options: GeneratorOptions): String {
         val paramName = options.paramName.ifEmpty { "foo" }
+        val thisPrefix = if (options.paramName.isNotEmpty()) "" else "this."
         val methodName = if (options.methodPrefix.isNotEmpty()) {
             "${options.methodPrefix}${convertFirstLetterToUpperCase("foo")}"
         } else {
@@ -37,7 +38,7 @@ object SampleCodeGenerator {
                     private Builder() { }
             
                     public Builder $methodName(String $paramName) {
-                        this.foo = $paramName;
+                        ${thisPrefix}foo = $paramName;
                         return this;
                     }
             

@@ -148,11 +148,12 @@ class BuilderGenerator(private val dtoClass: PsiClass, private val options: Gene
 
             val method = elementFactory.createMethod(methodName(options.methodPrefix, field), builderMethodReturnType)
             val parameter = elementFactory.createParameter(paramName(options.paramName, psiField), psiField.type)
+            val thisPrefix = if (psiField.name != parameter.name) "" else "this."
             method.parameterList.add(parameter)
 
             method.body!!.add(
                 elementFactory.createStatementFromText(
-                    "this.${psiField.name} = ${paramName(options.paramName, psiField)};\n",
+                    "$thisPrefix${psiField.name} = ${paramName(options.paramName, psiField)};\n",
                     builderClass
                 )
             )
