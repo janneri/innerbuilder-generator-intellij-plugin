@@ -47,7 +47,7 @@ class GeneratorOptionsDialog(persistedOptions: GeneratorOptions) : DialogWrapper
         gridbag.gridy += 1
         gridbag.insetBottom(20)
         panel.add(
-            getLabel("To quickly generate a builder with the previously selected settings, just hit \"shift alt B\"."),
+            getLabel("Use \"shift alt B\" to generate a builder with the saved settings."),
             gridbag
         )
 
