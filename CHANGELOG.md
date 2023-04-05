@@ -7,6 +7,7 @@
 ### Added
 - Configuration of builder method parameter name.
 - Show sample code with the selected settings.
+- Updated the compatible versions list to support Intellij Idea version 2023.1.
 
 ## [1.1.6]
 
