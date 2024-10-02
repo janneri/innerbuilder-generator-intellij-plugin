@@ -3,6 +3,7 @@
 # innerbuilder-generator-intellij-plugin Changelog
 
 ## [Unreleased]
+## [2.0.1]
 ### Added
 - Updated the compatible versions list to support Intellij Idea version 2024.2.
 
